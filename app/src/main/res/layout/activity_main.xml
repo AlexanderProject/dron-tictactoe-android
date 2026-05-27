@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000">
+
+    <!-- Video del dron de fondo -->
+    <SurfaceView
+        android:id="@+id/cameraSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Tablero del michi superpuesto (visible solo durante el juego) -->
+    <com.example.djimichi.ui.TicTacToeOverlay
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <!-- Banner de estado -->
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="16dp"
+        android:padding="10dp"
+        android:background="#88000000"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        android:text="Iniciando…" />
+
+    <!-- Panel de calibración (visible antes de jugar) -->
+    <LinearLayout
+        android:id="@+id/calibrationPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:background="#CC000000"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Separación entre casillas:"
+            android:textColor="#fff"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/spacingSlider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:valueFrom="1.0"
+                android:valueTo="5.0"
+                android:stepSize="0.5"
+                android:value="1.5" />
+
+            <TextView
+                android:id="@+id/spacingLabel"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="1.5 m"
+                android:textColor="#fff"
+                android:textSize="14sp"
+                android:gravity="end" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/gpsStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPS: --"
+            android:textColor="#aaa"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/calibrateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="CAPTURAR TABLERO" />
+    </LinearLayout>
+
+    <!-- Botón de aborto rojo (siempre visible cuando hay calibración) -->
+    <Button
+        android:id="@+id/abortButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:text="ABORTAR"
+        android:backgroundTint="#E24B4A"
+        android:textColor="#fff"
+        android:visibility="gone" />
+</FrameLayout>
