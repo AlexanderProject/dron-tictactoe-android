@@ -15,7 +15,7 @@ class TicTacToeOverlay @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     var onCellTapped: ((Int) -> Unit)? = null
-    var enabled: Boolean = false
+    var inputEnabled: Boolean = false
 
     var cells: Array<Cell> = Array(9) { Cell.EMPTY }
         set(value) { field = value; invalidate() }
@@ -112,7 +112,7 @@ class TicTacToeOverlay @JvmOverloads constructor(
     // --- Touch (mantenido para debugging; en producción no se wirea onCellTapped) ---
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (!enabled || event.action != MotionEvent.ACTION_DOWN) return false
+        if (!inputEnabled || event.action != MotionEvent.ACTION_DOWN) return false
         val cellW = width / 3
         val cellH = height / 3
         val col    = (event.x / cellW).toInt().coerceIn(0, 2)
