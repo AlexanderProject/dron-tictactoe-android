@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity(), DjiSdkManager.Listener {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        Log.d(TAG, "onCreate: UI inflada correctamente")
 
         binding.spacingSlider.addOnChangeListener { _, value, _ ->
             binding.spacingLabel.text = "%.1f m".format(value)
@@ -78,8 +79,15 @@ class MainActivity : AppCompatActivity(), DjiSdkManager.Listener {
         binding.calibrateButton.setOnClickListener { onCalibratePressed() }
         binding.abortButton.setOnClickListener { abort() }
 
-        requestAppPermissions()
-        sdk.register(this)
+        // El SDK se inicia DESPUÉS de que los permisos estén otorgados.
+        // Iniciarlo antes provoca SecurityException silenciosa en primer arranque.
+        if (allPermissionsGranted()) {
+            Log.d(TAG, "Permisos ya otorgados — iniciando SDK directamente")
+            sdk.register(this)
+        } else {
+            Log.d(TAG, "Solicitando permisos antes de iniciar SDK")
+            requestAppPermissions()
+        }
     }
 
     override fun onDestroy() {
@@ -123,25 +131,51 @@ class MainActivity : AppCompatActivity(), DjiSdkManager.Listener {
             Log.w(TAG, "Permisos denegados: $denied")
             toast("Permisos denegados: ${denied.joinToString()}. La app puede no funcionar.")
         }
+        // SDK se inicia ahora, con los permisos respondidos
+        Log.d(TAG, "Iniciando SDK post-permisos (denegados=$denied)")
+        sdk.register(this)
+    }
+
+    private fun allPermissionsGranted(): Boolean {
+        val perms = buildList {
+            add(Manifest.permission.ACCESS_FINE_LOCATION)
+            add(Manifest.permission.CAMERA)
+            add(Manifest.permission.READ_PHONE_STATE)
+            add(Manifest.permission.RECORD_AUDIO)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                add(Manifest.permission.BLUETOOTH_SCAN)
+                add(Manifest.permission.BLUETOOTH_CONNECT)
+            }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
+        return perms.all {
+            ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+        }
     }
 
     // ── SDK callbacks ──────────────────────────────────────────────────────────
 
     override fun onRegisterSuccess() = runOnUiThread {
+        Log.i(TAG, "onRegisterSuccess — SDK registrado OK")
         binding.statusText.text = "MSDK listo. Conecta el control remoto."
     }
 
     override fun onRegisterFailure(error: IDJIError) = runOnUiThread {
+        Log.e(TAG, "onRegisterFailure: ${error.description()}")
         binding.statusText.text = "Registro falló: ${error.description()}"
     }
 
     override fun onProductConnected() = runOnUiThread {
+        Log.i(TAG, "onProductConnected")
         binding.statusText.text = "Mini 4 Pro conectado. Coloca el dron y configura."
         startVideoFeed()
         handler.post(gpsPollRunnable)
     }
 
     override fun onProductDisconnected() = runOnUiThread {
+        Log.i(TAG, "onProductDisconnected")
         binding.statusText.text = "Dron desconectado"
         handler.removeCallbacks(gpsPollRunnable)
     }
