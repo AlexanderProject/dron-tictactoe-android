@@ -29,6 +29,9 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
+    <!-- USB para el control remoto RC-N1 -->
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+    <uses-feature android:name="android.hardware.usb.accessory" android:required="true" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
 
@@ -39,9 +42,10 @@
     </queries>
 
     <application
-        android:name="androidx.multidex.MultiDexApplication"
+        android:name=".DjiMichiApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:extractNativeLibs="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -52,10 +56,10 @@
 
         <!--
             DJI Developer Portal → https://developer.dji.com/user/apps
-            Reemplazar "REEMPLAZAR_CON_KEY" con la App Key de tu aplicación.
+            Nombre de clave correcto para MSDK v5: com.dji.sdk.API_KEY
         -->
         <meta-data
-            android:name="com.dji.sdk.AppKey"
+            android:name="com.dji.sdk.API_KEY"
             android:value="c4beb1ca433406f33b23505b" />
 
         <activity
@@ -67,6 +71,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Detecta cuando el control remoto RC-N1 se conecta por USB -->
+        <activity
+            android:name=".UsbAttachActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
+                android:resource="@xml/accessory_filter" />
+        </activity>
+
     </application>
 
 </manifest>
