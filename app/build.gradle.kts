@@ -39,6 +39,7 @@ android {
     }
     packaging {
         jniLibs {
+            useLegacyPackaging = true
             pickFirsts += setOf(
                 "**/libconstants.so",
                 "**/libdji_innertools.so",
