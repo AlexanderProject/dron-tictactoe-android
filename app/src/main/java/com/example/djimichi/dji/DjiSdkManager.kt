@@ -6,7 +6,7 @@ import dji.v5.common.error.IDJIError
 import dji.v5.common.register.DJISDKInitEvent
 import dji.v5.manager.SDKManager
 import dji.v5.manager.interfaces.SDKManagerCallback
-import dji.v5.utils.common.ProductType
+import dji.sdk.keyvalue.value.product.ProductType
 
 class DjiSdkManager(private val context: Context) {
 
