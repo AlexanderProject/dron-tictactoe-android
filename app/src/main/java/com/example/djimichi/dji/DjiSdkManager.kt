@@ -6,7 +6,6 @@ import dji.v5.common.error.IDJIError
 import dji.v5.common.register.DJISDKInitEvent
 import dji.v5.manager.SDKManager
 import dji.v5.manager.interfaces.SDKManagerCallback
-import dji.sdk.keyvalue.value.product.ProductType
 
 class DjiSdkManager(private val context: Context) {
 
@@ -29,17 +28,18 @@ class DjiSdkManager(private val context: Context) {
                 listener.onRegisterFailure(error)
             }
 
-            override fun onProductConnect(productType: ProductType) {
-                Log.i("DjiSdkManager", "Producto conectado: $productType")
+            override fun onProductConnect(productId: Int) {
+                Log.i("DjiSdkManager", "Producto conectado: $productId")
                 listener.onProductConnected()
             }
 
-            override fun onProductDisconnect(productType: ProductType) {
-                Log.i("DjiSdkManager", "Producto desconectado: $productType")
+            override fun onProductDisconnect(productId: Int) {
+                Log.i("DjiSdkManager", "Producto desconectado: $productId")
                 listener.onProductDisconnected()
             }
 
-            override fun onProductChanged(productType: ProductType) {}
+            override fun onProductChanged(productId: Int) {}
+            override fun onDatabaseDownloadProgress(current: Long, total: Long) {}
             override fun onInitProcess(event: DJISDKInitEvent, totalProcess: Int) {}
         })
     }
