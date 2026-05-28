@@ -4,8 +4,9 @@ import android.content.Context
 import android.util.Log
 import dji.v5.common.error.IDJIError
 import dji.v5.common.register.DJISDKInitEvent
-import dji.v5.manager.DJISDKManager
+import dji.v5.manager.SDKManager
 import dji.v5.manager.interfaces.SDKManagerCallback
+import dji.v5.utils.common.ProductType
 
 class DjiSdkManager(private val context: Context) {
 
@@ -17,7 +18,7 @@ class DjiSdkManager(private val context: Context) {
     }
 
     fun register(listener: Listener) {
-        DJISDKManager.getInstance().init(context, object : SDKManagerCallback {
+        SDKManager.getInstance().init(context, object : SDKManagerCallback {
             override fun onRegisterSuccess() {
                 Log.i("DjiSdkManager", "Registro exitoso")
                 listener.onRegisterSuccess()
@@ -28,23 +29,22 @@ class DjiSdkManager(private val context: Context) {
                 listener.onRegisterFailure(error)
             }
 
-            override fun onProductConnect(productId: Int) {
-                Log.i("DjiSdkManager", "Producto conectado: $productId")
+            override fun onProductConnect(productType: ProductType) {
+                Log.i("DjiSdkManager", "Producto conectado: $productType")
                 listener.onProductConnected()
             }
 
-            override fun onProductDisconnect(productId: Int) {
-                Log.i("DjiSdkManager", "Producto desconectado")
+            override fun onProductDisconnect(productType: ProductType) {
+                Log.i("DjiSdkManager", "Producto desconectado: $productType")
                 listener.onProductDisconnected()
             }
 
-            override fun onProductChanged(productId: Int) {}
-            override fun onInitProcess(event: DJISDKInitEvent?, totalProcess: Int) {}
-            override fun DatabaseDownloadProgress(current: Long, total: Long) {}
+            override fun onProductChanged(productType: ProductType) {}
+            override fun onInitProcess(event: DJISDKInitEvent, totalProcess: Int) {}
         })
     }
 
     fun destroy() {
-        // MSDK v5 maneja el ciclo de vida de forma interna
+        // SDKManager v5 maneja el ciclo de vida internamente
     }
 }
